@@ -1,0 +1,43 @@
+= Notes
+:toc:
+
+General notes/toolchain tips.
+
+== Installing Verilator
+
+The quick way is to install from the package manager:
+
+[,bash]
+----
+sudo apt install verilator
+----
+
+However, currently (on Ubuntu 22.04) this provides Verilator 4. If you need verilator 5, follow these steps to install it (see https://verilator.org/guide/latest/install.html[here]):
+
+[,bash]
+----
+sudo apt install git help2man perl python3 make autoconf g++ \
+     flex bison ccache libgoogle-perftools-dev numactl perl-doc \
+     libfl2 libfl-dev
+----
+
+Then clone the repository and build as follows:
+
+[,bash]
+----
+git clone https://github.com/verilator/verilator
+cd verilator
+
+unset VERILATOR_ROOT
+git checkout stable
+autoconf
+
+# Install in your home directory to manage
+# the installation more easily.
+mkdir $HOME/opt
+./configure --prefix=$HOME/opt
+make -j `nproc`
+make install
+----
+
+Finally, make sure `$HOME/opt/bin` is added to your path in `.bashrc`. Open a new terminal and run `verilator --version` to check the installation.
