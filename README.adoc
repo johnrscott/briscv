@@ -1,0 +1,8 @@
+= Basic RISC-V
+:toc:
+
+This repository contains a simple RISC-V core, made for two purposes:
+
+* To show what is required for a minimal compliant RISC-V core.
+* To experiment with different architectural features and explore their effect on performance, area and power.
+
