@@ -16,6 +16,8 @@ However, currently (on Ubuntu 22.04) this provides Verilator 4. If you need veri
 
 [,bash]
 ----
+sudo apt remove verilator
+
 sudo apt install git help2man perl python3 make autoconf g++ \
      flex bison ccache libgoogle-perftools-dev numactl perl-doc \
      libfl2 libfl-dev
@@ -30,14 +32,33 @@ cd verilator
 
 unset VERILATOR_ROOT
 git checkout stable
-autoconf
 
 # Install in your home directory to manage
 # the installation more easily.
-mkdir $HOME/opt
+mkdir -p $HOME/opt
+
+autoconf
 ./configure --prefix=$HOME/opt
 make -j `nproc`
 make install
 ----
 
-Finally, make sure `$HOME/opt/bin` is added to your path in `.bashrc`. Open a new terminal and run `verilator --version` to check the installation.
+Finally, make sure `$HOME/opt/bin` is added to your path in `.bashrc` (add `export PATH=$HOME/opt:$PATH`). Open a new terminal and run `verilator --version` to check the installation.
+
+== Installing Verible
+
+Verible provides binary releases for Linux https://github.com/chipsalliance/verible/releases[here]. Download the `.tar.gz` file for your architecture, and unzip it as follows:
+
+[,bash]
+----
+cd $HOME/opt
+
+# Replace to match your version
+tar xvf ~/Downloads/verible-v0.0-3716-g914652db-linux-static-x86_64.tar.gz
+
+# Create a symlink to the folder to make it
+# easy to change version in future
+ln -s verible-v0.0-3716-g914652db/ verible
+----
+
+Mkae sure `$HOME/opt/verible/bin` is added to your path in `.bashrc`. To check it works, open a new terminal and run `verible-verilog-lint --version`.
