@@ -61,4 +61,19 @@ tar xvf ~/Downloads/verible-v0.0-3716-g914652db-linux-static-x86_64.tar.gz
 ln -s verible-v0.0-3716-g914652db/ verible
 ----
 
-Mkae sure `$HOME/opt/verible/bin` is added to your path in `.bashrc`. To check it works, open a new terminal and run `verible-verilog-lint --version`.
+Make sure `$HOME/opt/verible/bin` is added to your path in `.bashrc`. To check it works, open a new terminal and run `verible-verilog-lint --version`.
+
+== Installing UVM
+
+The Universal verification methodology (UVM) library is freely available from https://www.accellera.org/downloads/standards/uvm[here]. Download the `tar.gz` for the latest version (e.g. `UVM v2020.3.0 Library Code for IEEE 1800.2`), and extract it to any location:
+
+[,bash]
+----
+cd $HOME/opt
+
+tar xvf ~/Downloads/UVM-1900.2-2020.3.0.tar.gz
+----
+
+All that is required to use UVM is to point the simulation tools to the UVM directory.
+
+== Installing UHDM

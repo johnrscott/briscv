@@ -29,13 +29,13 @@ interface axi4_lite_if #(
   clocking manager_cb @(posedge aclk);
     default input #1step output negedge;
     output arready, rvalid, rdata, awready, wready, bvalid, bresp;
-    input aresetn, aclk, aresetn, arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready;
+    input aclk, aresetn, arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready;
   endclocking
 
   clocking subordinate_cb @(posedge aclk);
     default input #1step output negedge;
-    input aresetn, arready, rvalid, rdata, awready, wready, bvalid, bresp;
-    output aclk, aresetn, arvalid, araddr, rready, awvalid, awaddr, wvalid, wdta, bready;
+    output arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready;
+    input aclk, aresetn, arready, rvalid, rdata, awready, wready, bvalid, bresp;
   endclocking
 
   modport manager(clocking manager_cb);
