@@ -1,0 +1,3 @@
+sv work tb_top.sv
+sv work registers.sv
+sv work registers_if.sv

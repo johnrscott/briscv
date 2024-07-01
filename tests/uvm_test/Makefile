@@ -9,6 +9,15 @@ LIBS=uvm
 # are both run from inside this directory)
 OUTPUT_DIR=build
 
+# Put each SystemVerilog source file on a new line in this
+# file to include it in the elaboration.
+FILES=files.prj
+
+# Simple elaborate is the default target to speed up
+# code checking. Use `make run`	to run the main simulation.
+.PHONY: elab
+elab: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
+
 # Run the simulation snapshot using xsim
 .PHONY: run
 run: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
@@ -18,9 +27,9 @@ run: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
 # ${OUTPUT_DIR} the simulation snapshot using xelab. This
 # is used to run the simulation using xsim. --debug all is
 # required to compile with trace information.
-${OUTPUT_DIR}/xsim.dir/sim_snapshot: Makefile tb_top.sv
+${OUTPUT_DIR}/xsim.dir/sim_snapshot: Makefile *.sv ${FILES}
 	mkdir -p ${OUTPUT_DIR}/
-	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../tb_top.prj --debug all tb_top -s sim_snapshot
+	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../${FILES} --debug all tb_top -s sim_snapshot
 
 .PHONY: clean
 clean:
