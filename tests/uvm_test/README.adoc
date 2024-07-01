@@ -1,0 +1,10 @@
+= Simple UVM Example
+
+A simple way to get started with UVM is to use the Vivado simulator provided by Xilinx. This avoids the initial complexity involved in setting up an open-source-based toolchain that is capable of simulating UVM testbenches, which is https://antmicro.com/blog/2023/01/open-source-systemverilog-uvm-support-in-verilator/[not trivial].
+
+This folder uses the non-project mode of Vivado, which means that it is not necessary to open the Vivado GUI to run the simulation. Instead, the makefile runs two tools directly:
+
+* `xelab`, which elaborates the design and testbench, and produces a simulation binary called a snapshot. This stage contains a precompiled UVM that can be linked.
+* `xsim`, which runs the simulation produced by `xelab`.
+
+It is possible to run all these commands from within a TCL script.
