@@ -13,14 +13,15 @@ OUTPUT_DIR=build
 # file to include it in the elaboration.
 FILES=files.prj
 
-# Simple elaborate is the default target to speed up
-# code checking. Use `make run`	to run the main simulation.
-.PHONY: elab
-elab: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
-
-# Run the simulation snapshot using xsim
+# Run the UVM simulation and print the results to stdout.
+# Does not open a graphical window
 .PHONY: run
 run: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
+	cd ${OUTPUT_DIR}/; xsim sim_snapshot -R
+
+# Open the graphical viewer to show traces
+.PHONY: gui
+gui: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
 	cd ${OUTPUT_DIR}/; xsim sim_snapshot -gui
 
 

@@ -1,3 +1,4 @@
-sv work tb_top.sv
-sv work registers.sv
 sv work registers_if.sv
+sv work registers.sv
+sv work tests_pkg.sv
+sv work tb_top.sv

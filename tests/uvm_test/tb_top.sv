@@ -1,7 +1,8 @@
 module tb_top();
 
    import uvm_pkg::*;
-
+   import tests_pkg::*;
+   
    bit clk, rst;
    always #10 clk = ~clk;
    
@@ -9,13 +10,11 @@ module tb_top();
    registers registers_0(.rif);
 
    initial begin
-      #100;
 
-      rst = 1;
-      #20;
-      rst = 0;
+      uvm_config_db #(virtual registers_if)::set(null, "uvm_test_top", "rif", rif);
+
+      run_test("registers_test");
       
-      $finish;
    end
    
 endmodule
