@@ -1,0 +1,3 @@
+sv work instr_fetch_unit.sv
+sv work generic/axi4_lite_if.sv
+sv work tb_top.sv
