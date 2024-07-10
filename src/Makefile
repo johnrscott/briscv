@@ -13,18 +13,10 @@ OUTPUT_DIR=build
 # file to include it in the elaboration.
 FILES=files.prj
 
-# Run the UVM simulation and print the results to stdout.
-# Does not open a graphical window
-.PHONY: run
-run: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
-	cd ${OUTPUT_DIR}/; xsim sim_snapshot -R
-
-# Open the graphical viewer to show traces
-.PHONY: gui
-gui: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
-	cd ${OUTPUT_DIR}/; xsim sim_snapshot -gui
-
-
+# This is listed first so that the default makefile target
+# is a simple build -- this can be used to check for file
+# syntax errors etc.
+#
 # ${OUTPUT_DIR} the simulation snapshot using xelab. This
 # is used to run the simulation using xsim. --debug all is
 # required to compile with trace information.
@@ -35,3 +27,14 @@ ${OUTPUT_DIR}/xsim.dir/sim_snapshot: Makefile *.sv ${FILES}
 .PHONY: clean
 clean:
 	rm -rf ${OUTPUT_DIR}/
+
+# Run the UVM simulation and print the results to stdout.
+# Does not open a graphical window
+.PHONY: run
+run: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
+	cd ${OUTPUT_DIR}/; xsim sim_snapshot -R
+
+# Open the graphical viewer to show traces
+.PHONY: gui
+gui: Makefile ${OUTPUT_DIR}/xsim.dir/sim_snapshot
+	cd ${OUTPUT_DIR}/; xsim sim_snapshot -gui
