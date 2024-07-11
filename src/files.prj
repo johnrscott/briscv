@@ -4,6 +4,7 @@ sv work generic/axi4_lite_if.sv
 
 sv work ifu.sv
 sv work alu.sv
+sv work shift.sv
 
 sv work tb_top.sv
 sv work alu_tb_top.sv

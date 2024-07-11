@@ -22,7 +22,7 @@ FILES=files.prj
 # required to compile with trace information.
 ${OUTPUT_DIR}/xsim.dir/sim_snapshot: Makefile *.sv ${FILES}
 	mkdir -p ${OUTPUT_DIR}/
-	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../${FILES} --debug all tb_top -s sim_snapshot
+	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../${FILES} --debug all alu_tb_top -s sim_snapshot
 
 .PHONY: clean
 clean:
