@@ -10,6 +10,7 @@ class alu_transaction extends uvm_sequence_item;
    rand types::funct3_t op;
    rand bit op_mod;
    bit [2:0] r;
+   bit	     zero;
    
    function new(string name = "");
       super.new(name);
@@ -21,6 +22,7 @@ class alu_transaction extends uvm_sequence_item;
       `uvm_field_enum(types::funct3_t, op, UVM_ALL_ON)
       `uvm_field_int(op_mod, UVM_ALL_ON)
       `uvm_field_int(r, UVM_ALL_ON)
+      `uvm_field_int(zero, UVM_ALL_ON)
    `uvm_object_utils_end
    
 endclass
@@ -40,7 +42,6 @@ class alu_sequence extends uvm_sequence#(alu_transaction);
 	 
          start_item(alu_tx);
          assert(alu_tx.randomize());
-	 alu_tx.print();
          finish_item(alu_tx);
       end
       
@@ -67,19 +68,21 @@ class alu_driver extends uvm_driver#(alu_transaction);
    virtual task drive();
 
       alu_transaction alu_tx;
-
+      types::alu_op_t alu_op;
+      
       forever begin
 	 
 	 seq_item_port.get_next_item(alu_tx);
-
-	 types::alu_op_t alu_op;
-	 //alu_op = '{ op: alu_tx.op, op_mod: alu_tx.op_mod };
+	 `uvm_info("DRV", "Driving DUT", UVM_LOW);
+	 
+	 alu_op = '{ op: alu_tx.op, op_mod: alu_tx.op_mod };
 
 	 vif.a = alu_tx.a;
 	 vif.b = alu_tx.b;
-	 //vif.alu_op = alu_tx.alu_op;
+	 vif.alu_op = alu_op;
 
 	 // Wait a single cycle for sim purposes -- ALU is combination
+	 //alu_tx.print();
 	 #1;
 
 	 seq_item_port.item_done();
@@ -116,9 +119,23 @@ class alu_monitor_before extends uvm_monitor;
    endfunction: build_phase
    
    task run_phase(uvm_phase phase);
+
+      alu_transaction alu_tx;
       
-      // Our code here
-      
+      forever begin
+
+	 // Read raw data and send to scoreboard
+	 alu_tx.a = vif.a; 
+	 alu_tx.b = vif.b; 
+	 alu_tx.r = vif.r; 
+	 alu_tx.zero = vif.zero; 
+	 mon_ap_before.write(alu_tx);
+	 
+	 // Delay 
+	 #1;
+	 
+      end
+
    endtask // run_phase
    
 endclass // alu_monitor_before
@@ -152,7 +169,24 @@ class alu_monitor_after extends uvm_monitor;
    
    task run_phase(uvm_phase phase);
       
-      // Our code here
+      alu_transaction alu_tx;
+      
+      forever begin
+
+	 // Read raw data and send to scoreboard
+	 alu_tx.a = vif.a; 
+	 alu_tx.b = vif.b; 
+
+	 // This time, calculate the expected output
+	 alu_tx.r = 0; 
+	 alu_tx.zero = 0;
+	 
+	 mon_ap_after.write(alu_tx);
+	 
+	 // Delay 
+	 #1;
+	 
+      end
       
    endtask: run_phase
 endclass
