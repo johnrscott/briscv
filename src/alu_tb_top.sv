@@ -7,7 +7,9 @@ import uvm_pkg::*;
 class alu_transaction extends uvm_sequence_item;
    rand bit [31:0] a;
    rand bit [31:0] b;
-   bit [2:0]	   r;
+   rand types::funct3_t op;
+   rand bit op_mod;
+   bit [2:0] r;
    
    function new(string name = "");
       super.new(name);
@@ -16,6 +18,8 @@ class alu_transaction extends uvm_sequence_item;
    `uvm_object_utils_begin(alu_transaction)
       `uvm_field_int(a, UVM_ALL_ON)
       `uvm_field_int(b, UVM_ALL_ON)
+      `uvm_field_enum(types::funct3_t, op, UVM_ALL_ON)
+      `uvm_field_int(op_mod, UVM_ALL_ON)
       `uvm_field_int(r, UVM_ALL_ON)
    `uvm_object_utils_end
    
@@ -36,6 +40,7 @@ class alu_sequence extends uvm_sequence#(alu_transaction);
 	 
          start_item(alu_tx);
          assert(alu_tx.randomize());
+	 alu_tx.print();
          finish_item(alu_tx);
       end
       
@@ -66,9 +71,13 @@ class alu_driver extends uvm_driver#(alu_transaction);
       forever begin
 	 
 	 seq_item_port.get_next_item(alu_tx);
-	 
+
+	 types::alu_op_t alu_op;
+	 //alu_op = '{ op: alu_tx.op, op_mod: alu_tx.op_mod };
+
 	 vif.a = alu_tx.a;
 	 vif.b = alu_tx.b;
+	 //vif.alu_op = alu_tx.alu_op;
 
 	 // Wait a single cycle for sim purposes -- ALU is combination
 	 #1;
@@ -271,7 +280,7 @@ class alu_test extends uvm_test;
    
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
-      env = alu_env::type_id::create("alu_seq", this);
+      env = alu_env::type_id::create("alu_env", this);
    endfunction // build_phase
    
    
@@ -279,10 +288,12 @@ class alu_test extends uvm_test;
       alu_sequence alu_seq;
       
       phase.raise_objection(.obj(this));
-      `uvm_info(get_type_name(), "Something", UVM_LOW);
+      `uvm_info(get_type_name(), "Starting test", UVM_LOW);
       
       alu_seq = alu_sequence::type_id::create("alu_seq", this);
+
       assert(alu_seq.randomize());
+
       alu_seq.start(env.alu_agnt.alu_seqr);
       
       phase.drop_objection(.obj(this));
