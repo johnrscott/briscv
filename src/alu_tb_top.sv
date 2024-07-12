@@ -80,6 +80,8 @@ class alu_driver extends uvm_driver#(alu_transaction);
 	 vif.a = alu_tx.a;
 	 vif.b = alu_tx.b;
 	 vif.alu_op = alu_op;
+	 vif.r = alu_tx.r;
+	 vif.zero = alu_tx.zero;
 
 	 // Wait a single cycle for sim purposes -- ALU is combination
 	 //alu_tx.print();
@@ -176,12 +178,16 @@ class alu_monitor_after extends uvm_monitor;
       alu_transaction alu_tx = alu_transaction::type_id::create("alu_tx", this);
       
       forever begin
-
+	 
 	 // Read raw data and send to scoreboard
 	 alu_tx.a = vif.a; 
 	 alu_tx.b = vif.b; 
-
+	 alu_tx.op = vif.alu_op.op;
+	 alu_tx.op_mod = vif.alu_op.op_mod;
+	 
 	 // This time, calculate the expected output
+	 
+
 	 alu_tx.r = 0; 
 	 alu_tx.zero = 0;
 	 
@@ -275,10 +281,16 @@ class alu_scoreboard extends uvm_scoreboard;
    
    virtual function void compare();
       if(transaction_before.r == transaction_after.r) begin
-         `uvm_info("compare", {"Test: OK!"}, UVM_LOW);
+         `uvm_info("compare", {"Result test: OK!"}, UVM_LOW);
       end else begin
-         `uvm_info("compare", {"Test: Fail!"}, UVM_LOW);
+         `uvm_info("compare", {"Result test: Fail!"}, UVM_LOW);
       end
+      if(transaction_before.zero == transaction_after.zero) begin
+         `uvm_info("compare", {"Zero test: OK!"}, UVM_LOW);
+      end else begin
+         `uvm_info("compare", {"Zero test: Fail!"}, UVM_LOW);
+      end
+
    endfunction // compare
    
 endclass // alu_scoreboard
