@@ -114,13 +114,15 @@ class alu_monitor_before extends uvm_monitor;
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       
-      void'(uvm_resource_db#(virtual alu_if)::read_by_name (.scope("ifs"), .name("alu_if"), .val(vif)));
+      if (!uvm_resource_db#(virtual alu_if)::read_by_name("ifs","alu_if", vif))
+	`uvm_error(get_type_name(), "Failed to get alu_if in alu_monitor_before");
+      
       mon_ap_before = new(.name("mon_ap_before"), .parent(this));
    endfunction: build_phase
    
    task run_phase(uvm_phase phase);
 
-      alu_transaction alu_tx;
+      alu_transaction alu_tx = alu_transaction::type_id::create("alu_tx", this);
       
       forever begin
 
@@ -163,13 +165,15 @@ class alu_monitor_after extends uvm_monitor;
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       
-      void'(uvm_resource_db#(virtual alu_if)::read_by_name(.scope("ifs"), .name("alu_if"), .val(vif)));
+      if (!uvm_resource_db#(virtual alu_if)::read_by_name("ifs", "alu_if", vif))
+	`uvm_error(get_type_name(), "alu_if not found in alu_monitor_after");
+	
       mon_ap_after= new(.name("mon_ap_after"), .parent(this));
    endfunction: build_phase
    
    task run_phase(uvm_phase phase);
       
-      alu_transaction alu_tx;
+      alu_transaction alu_tx = alu_transaction::type_id::create("alu_tx", this);
       
       forever begin
 
