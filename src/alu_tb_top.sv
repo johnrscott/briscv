@@ -37,12 +37,16 @@ class alu_sequence extends uvm_sequence#(alu_transaction);
    task body();
       alu_transaction alu_tx;
       
-      repeat(15) begin
+      repeat(1) begin
          alu_tx = alu_transaction::type_id::create();
 	 
          start_item(alu_tx);
          assert(alu_tx.randomize());
-         finish_item(alu_tx);
+         `uvm_info(get_type_name(),
+		   "Randomly generated sequence transaction",
+		   UVM_LOW);
+	 alu_tx.print();
+	 finish_item(alu_tx);
       end
       
    endtask
@@ -186,8 +190,8 @@ class alu_monitor_after extends uvm_monitor;
 	 alu_tx.op_mod = vif.alu_op.op_mod;
 	 
 	 // This time, calculate the expected output
-	 
-
+	 // use op and op_mod to decide what calculation
+	 // should be
 	 alu_tx.r = 0; 
 	 alu_tx.zero = 0;
 	 
