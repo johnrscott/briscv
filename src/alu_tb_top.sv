@@ -9,7 +9,7 @@ class alu_transaction extends uvm_sequence_item;
    rand bit [31:0] b;
    rand types::funct3_t op;
    rand bit op_mod;
-   bit [2:0] r;
+   bit [31:0] r;
    bit	     zero;
    
    function new(string name = "");
@@ -37,15 +37,11 @@ class alu_sequence extends uvm_sequence#(alu_transaction);
    task body();
       alu_transaction alu_tx;
       
-      repeat(1) begin
+      repeat(10000) begin
          alu_tx = alu_transaction::type_id::create();
 	 
          start_item(alu_tx);
          assert(alu_tx.randomize());
-         `uvm_info(get_type_name(),
-		   "Randomly generated sequence transaction",
-		   UVM_LOW);
-	 alu_tx.print();
 	 finish_item(alu_tx);
       end
       
@@ -84,11 +80,7 @@ class alu_driver extends uvm_driver#(alu_transaction);
 	 vif.a = alu_tx.a;
 	 vif.b = alu_tx.b;
 	 vif.alu_op = alu_op;
-	 vif.r = alu_tx.r;
-	 vif.zero = alu_tx.zero;
 
-	 // Wait a single cycle for sim purposes -- ALU is combination
-	 //alu_tx.print();
 	 #1;
 
 	 seq_item_port.item_done();
@@ -134,12 +126,17 @@ class alu_monitor_before extends uvm_monitor;
 
 	 // Read raw data and send to scoreboard
 	 alu_tx.a = vif.a; 
-	 alu_tx.b = vif.b; 
-	 alu_tx.r = vif.r; 
-	 alu_tx.zero = vif.zero; 
-	 mon_ap_before.write(alu_tx);
+	 alu_tx.b = vif.b;
+	 alu_tx.op = vif.alu_op.op;
+	 alu_tx.op_mod = vif.alu_op.op_mod;
 	 
-	 // Delay 
+	 // Read the outputs from the virtual interface
+	 alu_tx.r = vif.r; 
+	 alu_tx.zero = vif.zero;
+	 
+	 mon_ap_before.write(alu_tx);
+
+	 // Delay before next read
 	 #1;
 	 
       end
@@ -189,12 +186,32 @@ class alu_monitor_after extends uvm_monitor;
 	 alu_tx.op = vif.alu_op.op;
 	 alu_tx.op_mod = vif.alu_op.op_mod;
 	 
-	 // This time, calculate the expected output
-	 // use op and op_mod to decide what calculation
-	 // should be
-	 alu_tx.r = 0; 
-	 alu_tx.zero = 0;
-	 
+	 // Use the inputs from vif to calculate the
+	 // expected outputs and store them in alu_tx
+	 case (vif.alu_op.op)
+	   types::FUNCT3_ADD:
+	     // op_mod turns addition into subtraction 
+	     if (vif.alu_op.op_mod)
+	       alu_tx.r = vif.a - vif.b;
+	     else
+	       alu_tx.r = vif.a + vif.b;
+	   types::FUNCT3_OR: alu_tx.r = vif.a | vif.b;
+	   types::FUNCT3_AND: alu_tx.r = vif.a & vif.b;
+	   types::FUNCT3_XOR: alu_tx.r = vif.a ^ vif.b;
+	   types::FUNCT3_SLL: alu_tx.r = vif.a << vif.b[4:0];
+	   types::FUNCT3_SRL: 
+	      // op_mod determines arithmetic instead of default logical
+	      if (vif.alu_op.op_mod)
+		alu_tx.r = $signed(vif.a) >>> vif.b[4:0];
+	      else
+		alu_tx.r = vif.a >> vif.b[4:0];
+	   types::FUNCT3_SLTU: alu_tx.r = vif.a < vif.b ? 1 : 0;
+	   types::FUNCT3_SLT: alu_tx.r = $signed(vif.a) < $signed(vif.b) ? 1 : 0;
+	 endcase
+
+	 // Calculate the zero flag
+	 alu_tx.zero = alu_tx.r == 0 ? 1 : 0;
+
 	 mon_ap_after.write(alu_tx);
 	 
 	 // Delay 
@@ -284,15 +301,16 @@ class alu_scoreboard extends uvm_scoreboard;
    endtask // run
    
    virtual function void compare();
-      if(transaction_before.r == transaction_after.r) begin
-         `uvm_info("compare", {"Result test: OK!"}, UVM_LOW);
+      if((transaction_before.r == transaction_after.r)
+	 & (transaction_before.zero == transaction_after.zero)) begin
+         `uvm_info("compare", "Result test: OK!", UVM_LOW);
       end else begin
-         `uvm_info("compare", {"Result test: Fail!"}, UVM_LOW);
-      end
-      if(transaction_before.zero == transaction_after.zero) begin
-         `uvm_info("compare", {"Zero test: OK!"}, UVM_LOW);
-      end else begin
-         `uvm_info("compare", {"Zero test: Fail!"}, UVM_LOW);
+         `uvm_info("compare", "Result test: Fail!", UVM_LOW);
+	 `uvm_info("compare", "Expected transaction:", UVM_LOW);
+	 transaction_after.print();
+	 `uvm_info("compare", "Actual transaction:", UVM_LOW);
+	 transaction_before.print();
+	 `uvm_error("compare", "ALU result failed");
       end
 
    endfunction // compare
