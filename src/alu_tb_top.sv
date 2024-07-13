@@ -153,17 +153,22 @@ class alu_monitor_after extends uvm_monitor;
    virtual alu_if vif;
    
    alu_transaction alu_tx_cg;
-   
+
+   // This construction is called an embedded covergroup -- it
+   // behaves like a variable, not a type
    covergroup alu_cg;
       a_cp:     coverpoint alu_tx_cg.a;
       b_cp:     coverpoint alu_tx_cg.b;
       cross a_cp, b_cp;
-   endgroup
-   
+   endgroup // alu_cg
+
    function new(string name, uvm_component parent);
       super.new(name, parent);
+
+      alu_tx_cg = new;
+      
       alu_cg = new;
-   endfunction: new
+   endfunction // new
    
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
@@ -172,6 +177,7 @@ class alu_monitor_after extends uvm_monitor;
 	`uvm_error(get_type_name(), "alu_if not found in alu_monitor_after");
 	
       mon_ap_after= new(.name("mon_ap_after"), .parent(this));
+      
    endfunction: build_phase
    
    task run_phase(uvm_phase phase);
@@ -185,6 +191,9 @@ class alu_monitor_after extends uvm_monitor;
 	 alu_tx.b = vif.b; 
 	 alu_tx.op = vif.alu_op.op;
 	 alu_tx.op_mod = vif.alu_op.op_mod;
+
+	 // Sample covergroup
+	 alu_cg.sample();
 	 
 	 // Use the inputs from vif to calculate the
 	 // expected outputs and store them in alu_tx
@@ -219,7 +228,8 @@ class alu_monitor_after extends uvm_monitor;
 	 
       end
       
-   endtask: run_phase
+   endtask // run_phase
+   
 endclass
 
 class alu_agent extends uvm_agent;
