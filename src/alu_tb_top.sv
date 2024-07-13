@@ -177,7 +177,7 @@ class alu_monitor_after extends uvm_monitor;
 	`uvm_error(get_type_name(), "alu_if not found in alu_monitor_after");
 	
       mon_ap_after= new(.name("mon_ap_after"), .parent(this));
-      
+
    endfunction: build_phase
    
    task run_phase(uvm_phase phase);
@@ -194,6 +194,7 @@ class alu_monitor_after extends uvm_monitor;
 
 	 // Sample covergroup
 	 alu_cg.sample();
+	 `uvm_info("coverage", $sformatf("Coverage is %d", alu_cg.get_coverage()) , UVM_LOW);
 	 
 	 // Use the inputs from vif to calculate the
 	 // expected outputs and store them in alu_tx
@@ -403,7 +404,7 @@ module alu_tb_top;
       
       // Executes the test
       run_test("alu_test");
-      
+
    end
    
    // Variable initialization
