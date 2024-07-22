@@ -2,7 +2,7 @@
 
 import uvm_pkg::*;
 
-class alu_transaction extends uvm_sequence_item;
+class axi4_lite_transaction extends uvm_sequence_item;
    rand bit [31:0] a;
    rand bit [31:0] b;
    rand types::funct3_t op;
@@ -14,7 +14,7 @@ class alu_transaction extends uvm_sequence_item;
       super.new(name);
    endfunction
    
-   `uvm_object_utils_begin(alu_transaction)
+   `uvm_object_utils_begin(axi4_lite_transaction)
       `uvm_field_int(a, UVM_ALL_ON)
       `uvm_field_int(b, UVM_ALL_ON)
       `uvm_field_enum(types::funct3_t, op, UVM_ALL_ON)
@@ -25,6 +25,7 @@ class alu_transaction extends uvm_sequence_item;
    
 endclass
 
+/*
 class alu_sequence extends uvm_sequence#(alu_transaction);
    `uvm_object_utils(alu_sequence)
    
@@ -350,20 +351,22 @@ class alu_env extends uvm_env;
    
 endclass // alu_env
 
-class alu_test extends uvm_test;
-   `uvm_component_utils(alu_test)
-   
-   alu_env env;
+ */
+
+class axi4_lite_mem_test extends uvm_test;
+   `uvm_component_utils(axi4_lite_mem_test)
+
+   //alu_env env;
    
    function new(string name, uvm_component parent);
       super.new(name, parent);
    endfunction
-   
+
+   /*
    function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       env = alu_env::type_id::create("alu_env", this);
    endfunction // build_phase
-   
    
    task run_phase(uvm_phase phase);
       alu_sequence alu_seq;
@@ -380,37 +383,40 @@ class alu_test extends uvm_test;
       phase.drop_objection(.obj(this));
 
    endtask // run_phase
-   
-endclass // alu_test
+   */
+    
+endclass
+ 
 
+module axi4_lite_mem_tb_top;
 
-module alu_tb_top;
+   logic aclk, aresetn;
    
    // Interface declaration
-   alu_if vif();
+   axi4_lite_if vif(.aclk, .aresetn);
    
    // Connects the Interface to the DUT
-   alu dut(.a(vif.a), .b(vif.b), .alu_op(vif.alu_op), .r(vif.r), .zero(vif.zero));
-   
+   axi4_lite_mem dut(.bus(vif));
+
    initial begin
       
       // Registers the Interface in the configuration block
       // so that other blocks can use it
-      uvm_resource_db#(virtual alu_if)::set(
-	 .scope("ifs"), .name("alu_if"), .val(vif)
+      uvm_resource_db#(virtual axi4_lite_if)::set(
+	 .scope("ifs"), .name("axi4_lite_if"), .val(vif)
       );
       
       // Executes the test
-      run_test("alu_test");
+      run_test("axi4_lite_mem_test");
 
    end
    
    // Variable initialization
-   // initial begin
-   //    vif.sig_clock = 1'b1;
-   // end
+   initial
+     aclk = 1'b1;
    
    // Clock generation
-   // always
-   //   #5 vif.sig_clock = ~vif.sig_clock;
+   always
+     #5 aclk = ~aclk;
+
 endmodule

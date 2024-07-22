@@ -12,5 +12,4 @@ module system(logic aclk, logic aresetn);
 
    cpu cpu(.imem_bus, .dmem_bus);
    
-   
 endmodule

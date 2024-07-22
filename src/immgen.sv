@@ -21,13 +21,13 @@ import types::instr_format_t;
 /// 101: { 27{1'b0}, instr[24:20] }, Zicsr
 ///
 module immgen(
-   input	     instr_format_t sel, // Set immediate to extract
-   input	     instr_t instr,	 // Current instruction
-   output bit [31:0] imm_uimm		 // Output 32-bit immediate
+   input	     instr_format_t instr_format_sel, // Set immediate to extract
+   input	     instr_t instr,		      // Current instruction
+   output bit [31:0] imm_uimm			      // Output 32-bit immediate
 );
 
    always_comb begin
-      case (sel)
+      case (instr_format_sel)
 	types::I_TYPE:
 	  imm_uimm = signed'(instr.i_type.imm11_0);
 	types::S_TYPE:

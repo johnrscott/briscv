@@ -1,10 +1,10 @@
+import types::instr_t;
+
 module ifu(
-   input logic		aclk, aresetn,
+   input logic		ifu_stall,
+   output logic		ifu_ready,
 
-   input logic		ifu_stall_in,
-   output logic		ifu_stall_out,    // 0 means instr and pc are valid
-
-   output logic [31:0]	instr,
+   output		instr_t instr,
    output logic [31:0]	pc,
 
    input logic [31:0]	next_pc,

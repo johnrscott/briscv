@@ -13,6 +13,9 @@ OUTPUT_DIR=build
 # file to include it in the elaboration.
 FILES=files.prj
 
+# Top module name
+TOP=axi4_lite_mem_tb_top
+
 # This is listed first so that the default makefile target
 # is a simple build -- this can be used to check for file
 # syntax errors etc.
@@ -22,7 +25,7 @@ FILES=files.prj
 # required to compile with trace information.
 ${OUTPUT_DIR}/xsim.dir/sim_snapshot: Makefile *.sv ${FILES}
 	mkdir -p ${OUTPUT_DIR}/
-	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../${FILES} --debug all alu_tb_top -s sim_snapshot
+	cd ${OUTPUT_DIR}/; xelab -L ${LIBS} -prj ../${FILES} --debug all ${TOP} -s sim_snapshot
 
 .PHONY: clean
 clean:

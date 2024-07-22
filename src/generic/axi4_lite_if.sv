@@ -23,19 +23,14 @@ interface axi4_lite_if #(
    logic		    bvalid, bready;
    logic [2:0]		    bresp;
 
-   clocking manager_cb @(posedge aclk);
-      default input #1step output negedge;
-      output arready, rvalid, rdata, awready, wready, bvalid, bresp;
-      input  aclk, aresetn, arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready;
-   endclocking
-
-   clocking subordinate_cb @(posedge aclk);
-      default input #1step output negedge;
-      output arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready;
-      input  aclk, aresetn, arready, rvalid, rdata, awready, wready, bvalid, bresp;
-   endclocking
-
-   modport manager(clocking manager_cb);
-   modport subordinate(clocking subordinate_cb);
+   modport manager(
+      output arready, rvalid, rdata, awready, wready, bvalid, bresp,
+      input  aclk, aresetn, arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready
+   );
+   
+   modport subordinate(
+      output arvalid, araddr, rready, awvalid, awaddr, wvalid, wdata, bready,
+      input  aclk, aresetn, arready, rvalid, rdata, awready, wready, bvalid, bresp
+   );
 
 endinterface

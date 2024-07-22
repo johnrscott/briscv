@@ -11,6 +11,11 @@ sv work cpu.sv
 sv work idu.sv
 sv work regfile.sv
 sv work immgen.sv
+sv work alu_mux.sv
+sv work lsu.sv
+sv work wb_mux.sv
 
-sv work tb_top.sv
+sv work alu_if.sv
+
 sv work alu_tb_top.sv
+sv work axi4_lite_mem_tb_top.sv

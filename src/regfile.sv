@@ -10,7 +10,7 @@
 /// set to zero.
 ///
 module regfile(
-   input	 aclk, resetn,
+   input	 aclk, aresetn,
    input	 write_en, // write enable
    input [31:0]	 rd_data,  // data for write
    input [4:0]	 rd,	   // destination register index for write
@@ -25,7 +25,7 @@ module regfile(
    assign rs2_data = (rs2 == 0)? 0 : register[rs2];
    
    always_ff @(posedge aclk) begin
-      if (!resetn)
+      if (!aresetn)
 	register = '{default: 0};
       else
 	if ((rd != 0) && write_en) // not x0 and write is enabled

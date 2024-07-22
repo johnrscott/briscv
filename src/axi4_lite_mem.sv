@@ -1,5 +1,5 @@
 module axi4_lite_mem(
-   axif_lite_if.subordinate bus
+   axi4_lite_if.subordinate bus
 );
    
    logic [31:0] words[1024];
